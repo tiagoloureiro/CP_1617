@@ -13,4 +13,3 @@ showR n x = rep (n-length s) ' '++s
 
 rep :: Int -> a -> [a]
 rep n x = take n (repeat x)
-

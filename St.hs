@@ -48,10 +48,10 @@ instance Applicative (St s) where
 exec :: St s  a -> s -> (a, s)
 exec   (St g) s =  g s          -- splits evalState and execState
 
--- generic actions 
+-- generic actions
 
 get   :: St s s                    -- as in class MonadState
-get = St(split id id) 
+get = St(split id id)
 
 modify :: (s -> s) -> St s ()
 modify f = St(split (!) f)
@@ -70,7 +70,7 @@ trans g f = do { modify g ; query f }
 meth :: ((a, s) -> (b, s)) -> a -> St s b
 meth f = St.(curry f)  -- create "method" from function
 
--- update state, then query 
+-- update state, then query
 
 updfst :: (a -> s -> s) -> (a -> s -> b) -> a -> St s b
 updfst g f a = St (split (f a) id . (g a))
@@ -79,7 +79,7 @@ updfst g f a = St (split (f a) id . (g a))
 
 -- example (ATM credit)
 
-credit = updfst (+) (bal) 
+credit = updfst (+) (bal)
            where bal a s = "credited= "++show a ++ ", bal= "++ show s
 
 -- query state, then update
@@ -96,4 +96,3 @@ pop_action = qryfst (\_ -> tail) (\_ -> head)
 
 loop :: Monad m => m a -> m b
 loop x = do { x ; loop x }
-

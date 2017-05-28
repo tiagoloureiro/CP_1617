@@ -14,7 +14,7 @@ split f g x = (f x, g x)
 (><) :: (a -> b) -> (c -> d) -> (a,c) -> (b,d)
 f >< g = split (f . p1) (g . p2)
 
--- the 0-adic split 
+-- the 0-adic split
 
 (!) :: a -> ()
 (!) = const ()
@@ -52,7 +52,7 @@ expn f = curry (f . ap)
 
 p2p p b = if b then (snd p) else (fst p) -- pair to predicate
 
--- exponentiation functor is (a->) predefined 
+-- exponentiation functor is (a->) predefined
 
 -- instance Functor ((->) s) where
 --	fmap f g = f . g
@@ -70,7 +70,7 @@ swap :: (a,b) -> (b,a)
 swap = split p2 p1
 
 assocr :: ((a,b),c) -> (a,(b,c))
-assocr = split ( p1 . p1 ) (snd >< id)
+assocr = split ( p1 . p1 ) (p2 >< id)
 
 assocl :: (a,(b,c)) -> ((a,b),c)
 assocl = split ( id >< p1 ) ( p2 . p2 )
@@ -102,7 +102,7 @@ coassocr = either (id -|- i1) (i2 . i2)
 coassocl :: Either b (Either a c) -> Either (Either b a) c
 coassocl = either (i1.i1) (i2 -|- id)
 
-distr = uncurry f where f a = (g a) -|- (g a) where g a x = (a,x)
+distr = uncurry (either (curry i1)(curry i2))
 
 distl = (swap -|- swap) . distr . swap
 
@@ -177,6 +177,8 @@ dlift = lift . lift
 
 -- (8) Basic functions, abbreviations ------------------------------------------
 
+dup = split id id
+
 zero = const 0
 
 one  = const 1
@@ -190,6 +192,12 @@ add = uncurry (+)
 mul = uncurry (*)
 
 conc = uncurry (++)
+
+true = const True
+
+nothing = const Nothing
+
+false = const False
 
 inMaybe :: Either () a -> Maybe a
 inMaybe = either (const Nothing) Just
@@ -212,5 +220,10 @@ instance DistL Maybe where
 aap :: Monad m  => m (a->b) -> m a -> m b
 -- to convert Monad into Applicative
 aap mf mx = do { f <- mf ; x <- mx ; return (f x) }
+
+-- gather: n-ary split
+
+gather :: [a -> b] -> a -> [b]
+gather l x = map (flip ($) x) l
 
 --------------------------------------------------------------------------------
