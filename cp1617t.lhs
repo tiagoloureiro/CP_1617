@@ -718,8 +718,8 @@ inv x = undefined
 \begin{code}
 wc_w_final :: [Char] -> Int
 wc_w_final = wrapper . worker
-wrapper = undefined
-worker = undefined
+wrapper l = foldr (\x y -> y+1) 0 l
+worker l = words l
 \end{code}
 
 \subsection*{Problema 3}
